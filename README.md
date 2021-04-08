@@ -19,5 +19,4 @@ More info:
 - сreate "~/torrserver/db" directory (for example) on your host
 ```
 docker run -d --name=torrservermatrix --restart=always -v ~/torrserver/db:/torrserver/db -v /etc/localtime:/etc/localtime:ro -p 8090:8090 solopasha/torrserver
->>>>>>> d77af2032d661d2397d0844e1995362eef7861fd
 ```
