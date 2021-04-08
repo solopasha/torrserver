@@ -1,7 +1,7 @@
 # torrserver
 ### Unofficial Docker Image for TorrServer
 
-This is unofficial dockerized precompiled TorrServer. (~30MB)
+Unofficial dockerized precompiled TorrServer. (~30MB)
 
 "TorrServer, stream torrent to http"
 
