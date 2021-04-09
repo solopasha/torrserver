@@ -2,7 +2,7 @@ FROM frolvlad/alpine-glibc
 LABEL maintainer="solopasha"
 
 # TorrServer version
-ENV TORRSERVER_VERSION="MatriX.87"
+ENV TORRSERVER_VERSION="MatriX.88"
 
 # TorrServer architecture
 ENV TORRSERVER_ARCH="linux-amd64"
