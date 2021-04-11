@@ -16,5 +16,6 @@ More info:
 
 - сreate "~/torrserver/db" directory (for example) on your host
 ```
+mkdir -p ~/torrserver/db
 docker run -d --name=torrservermatrix --restart=always -v ~/torrserver/db:/torrserver/db -v /etc/localtime:/etc/localtime:ro -p 8090:8090 solopasha/torrserver
 ```
