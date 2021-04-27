@@ -19,3 +19,7 @@ More info:
 mkdir -p ~/torrserver/db
 docker run -d --name=torrservermatrix --restart=always -v ~/torrserver/db:/torrserver/db -v /etc/localtime:/etc/localtime:ro -p 8090:8090 solopasha/torrserver
 ```
+### Usage
+Open ```localhost:8090``` in your browser.
+Torrent files, placed in ~/torrserver/db will be added to torrserver automatically.
+
