@@ -1,8 +1,8 @@
-FROM frolvlad/alpine-glibc
+FROM busybox:glibc
 LABEL maintainer="solopasha"
 
 # TorrServer version
-ENV TORRSERVER_VERSION="MatriX.92"
+ENV TORRSERVER_VERSION="MatriX.93"
 
 # TorrServer architecture
 ENV TORRSERVER_ARCH="linux-amd64"
@@ -18,8 +18,7 @@ ENV TORRSERVER_DIR="/torrserver"
 ENV TORRSERVER_PORT="8090"
 
 # Download TorrServer binaries
-RUN apk add --no-cache wget \
-	&& mkdir -p ${TORRSERVER_DIR} \
+RUN mkdir -p ${TORRSERVER_DIR} \
 	&& cd ${TORRSERVER_DIR} \
 	&& wget ${TORRSERVER_RELEASE} \
 	&& chmod +x ${TORRSERVER_FILE}
