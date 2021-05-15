@@ -17,6 +17,8 @@ ENV TORRSERVER_DIR="/torrserver"
 # Torrserver UI port
 ENV TORRSERVER_PORT="8090"
 
+ENV GODEBUG=madvdontneed=1
+
 # Download TorrServer binaries
 RUN mkdir -p ${TORRSERVER_DIR} \
 	&& cd ${TORRSERVER_DIR} \
