@@ -2,7 +2,7 @@ FROM busybox:glibc
 LABEL maintainer="solopasha"
 
 # TorrServer version
-ENV TORRSERVER_VERSION="MatriX.98"
+ENV TORRSERVER_VERSION="MatriX.99"
 
 # TorrServer architecture
 ENV TORRSERVER_ARCH="linux-amd64"
