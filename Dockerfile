@@ -1,8 +1,8 @@
-FROM busybox:glibc
+FROM alpine
 LABEL maintainer="solopasha"
 
 # TorrServer version
-ENV TORRSERVER_VERSION="MatriX.100"
+ENV TORRSERVER_VERSION="MatriX.106"
 
 # TorrServer architecture
 ENV TORRSERVER_ARCH="linux-amd64"
@@ -20,7 +20,8 @@ ENV TORRSERVER_PORT="8090"
 ENV GODEBUG=madvdontneed=1
 
 # Download TorrServer binaries
-RUN mkdir -p ${TORRSERVER_DIR} \
+RUN apk add --no-cache libc6-compat \
+	&& mkdir -p ${TORRSERVER_DIR} \
 	&& cd ${TORRSERVER_DIR} \
 	&& wget ${TORRSERVER_RELEASE} \
 	&& chmod +x ${TORRSERVER_FILE}
@@ -30,5 +31,5 @@ EXPOSE ${TORRSERVER_PORT}
 
 # Run TorrServer
 WORKDIR ${TORRSERVER_DIR}
-# VOLUME ${TORRSERVER_DIR}
+VOLUME ${TORRSERVER_DIR}/db
 ENTRYPOINT ./${TORRSERVER_FILE} -d ./db -t ./db
