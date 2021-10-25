@@ -2,7 +2,7 @@ FROM alpine
 LABEL maintainer="solopasha"
 
 # TorrServer version
-ENV TORRSERVER_VERSION="MatriX.108"
+ENV TORRSERVER_VERSION="MatriX.109"
 
 # TorrServer directory
 ENV TORRSERVER_DIR="/torrserver"
