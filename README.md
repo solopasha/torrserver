@@ -1,6 +1,5 @@
 # torrserver
-### Unofficial Docker Image for TorrServer (~16MB)
-
+### Unofficial Docker Image for TorrServer
 "TorrServer, stream torrent to http"
 
 More info:
@@ -10,16 +9,19 @@ More info:
 ### Requirements
 
 * docker
-* ~200 Mb RAM(caching)
+* ~200 Mb RAM for caching (tunable)
 
 ### Installing
-
-- сreate "~/torrserver/db" directory (for example) on your host
 ```
 mkdir -p ~/torrserver/db
-docker run -d --name=torrservermatrix --restart=always -v ~/torrserver/db:/torrserver/db -v /etc/localtime:/etc/localtime:ro -p 8090:8090 solopasha/torrserver
+docker run -d --name=torrservermatrix --restart=unless-stopped -v ~/torrserver/db:/torrserver/db -v /etc/localtime:/etc/localtime:ro -p 8090:8090 solopasha/torrserver
 ```
+*Optional:*
+For DLNA you need ``` --net=host ```
 ### Usage
-Open ```localhost:8090``` in your browser.  
+Open ```localhost:8090``` in your browser. Enjoy!
+
+
+
 Torrent files(*.torrent*), placed in ~/torrserver/db will be added to torrserver automatically.
 
