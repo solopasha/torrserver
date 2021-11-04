@@ -12,7 +12,7 @@ ENV TORRSERVER_PORT="8090"
 
 ENV GODEBUG=madvdontneed=1
 WORKDIR ${TORRSERVER_DIR}
-ENV PATH="/${TORRSERVER_DIR}:${PATH}"
+ENV PATH="${TORRSERVER_DIR}:${PATH}"
 
 # Download TorrServer binaries
 RUN apk add --no-cache libc6-compat; \
