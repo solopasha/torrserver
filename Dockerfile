@@ -11,11 +11,11 @@ ENV TORRSERVER_DIR="/torrserver"
 ENV TORRSERVER_PORT="8090"
 
 ENV GODEBUG=madvdontneed=1
-WORKDIR ${TORRSERVER_DIR}
 ENV PATH="${TORRSERVER_DIR}:${PATH}"
 
+WORKDIR ${TORRSERVER_DIR}
 # Download TorrServer binaries
-RUN apk add --no-cache libc6-compat; \
+RUN apk add --no-cache libc6-compat curl; \
     apkArch="$(apk --print-arch)"; \
     case "$apkArch" in \
     x86_64) export TORRSERVER_ARCH='linux-amd64' ;; \
@@ -25,8 +25,10 @@ RUN apk add --no-cache libc6-compat; \
     esac; \
     export TORRSERVER_FILE="TorrServer-${TORRSERVER_ARCH}" && \
     export TORRSERVER_RELEASE="https://github.com/YouROK/TorrServer/releases/download/${TORRSERVER_VERSION}/${TORRSERVER_FILE}" && \
-    wget -q ${TORRSERVER_RELEASE} -O TorrServer && \
+    curl -sLS ${TORRSERVER_RELEASE} -o TorrServer && \
     chmod +x TorrServer
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD curl -sS 127.0.0.1:8090/echo || exit 1
 
 # Expose port
 EXPOSE ${TORRSERVER_PORT}
