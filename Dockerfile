@@ -1,9 +1,6 @@
 FROM alpine
 LABEL maintainer="solopasha"
 
-# TorrServer version
-ENV TORRSERVER_VERSION="MatriX.109"
-
 # TorrServer directory
 ENV TORRSERVER_DIR="/torrserver"
 
@@ -14,9 +11,13 @@ ENV GODEBUG=madvdontneed=1
 ENV PATH="${TORRSERVER_DIR}:${PATH}"
 
 WORKDIR ${TORRSERVER_DIR}
+
+# Install curl, grep and get the latest TorrServer tag from the repository
+RUN apk add --no-cache libc6-compat curl --upgrade grep; \
+    export TORRSERVER_VERSION=$(curl -s "https://github.com/YouROK/TorrServer/releases/latest" | grep -Po 'tag/\K[^"]*')
+
 # Download TorrServer binaries
-RUN apk add --no-cache libc6-compat curl; \
-    apkArch="$(apk --print-arch)"; \
+RUN apkArch="$(apk --print-arch)"; \
     case "$apkArch" in \
     x86_64) export TORRSERVER_ARCH='linux-amd64' ;; \
     x86) export TORRSERVER_ARCH='linux-386' ;; \
