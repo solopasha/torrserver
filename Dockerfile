@@ -1,9 +1,6 @@
 FROM alpine
 LABEL maintainer="solopasha"
 
-# TorrServer version
-ENV TORRSERVER_VERSION="MatriX.110"
-
 # TorrServer directory
 ENV TORRSERVER_DIR="/torrserver"
 
@@ -23,8 +20,9 @@ RUN apk add --no-cache libc6-compat curl; \
     aarch64) export TORRSERVER_ARCH='linux-arm64' ;; \
     armv7) export TORRSERVER_ARCH='linux-arm7' ;; \
     esac; \
+    version="$(curl -s "https://github.com/YouROK/TorrServer/releases/latest" | sed 's#.*tag/\(.*\)\".*#\1#')" && \
     export TORRSERVER_FILE="TorrServer-${TORRSERVER_ARCH}" && \
-    export TORRSERVER_RELEASE="https://github.com/YouROK/TorrServer/releases/download/${TORRSERVER_VERSION}/${TORRSERVER_FILE}" && \
+    export TORRSERVER_RELEASE="https://github.com/YouROK/TorrServer/releases/download/${version}/${TORRSERVER_FILE}" && \
     curl -sLS ${TORRSERVER_RELEASE} -o TorrServer && \
     chmod +x TorrServer
 

@@ -2,40 +2,85 @@ name: Build and push torrserver docker image
 
 on:
   push:
-    tags:
-      - "v*"
+
+  schedule:
+    - cron: "0 0 * * *"
+env:
+  TOKEN_TG: ${{ secrets.TOKEN_TG }}
+  CHAT_ID_TG: ${{ secrets.CHAT_ID_TG }}
 
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+
+      - name: Run check version YouROK/TorrServer
+        run: |
+          old_version="$(cat README.md | grep Version | sed -n '/.*Version /s///p')"
+          new_version="$(curl -s "https://github.com/YouROK/TorrServer/releases/latest" | sed 's#.*tag/\(.*\)\".*#\1#')"
+          tag="$(echo $new_version | sed 's/MatriX./v/g')"
+          echo "old_version=$old_version" >> $GITHUB_ENV
+          echo "$old_version"
+          echo "new_version=$new_version" >> $GITHUB_ENV
+          echo "$new_version"
+          echo "tag=$tag" >> $GITHUB_ENV
+          echo "$tag"
+          [[ "$old_version" == "$new_version" ]] && echo $old_version && exit || sed -i "s/Version .*/Version $new_version/" README.md
+          echo "sed"
+          [[ "$new_version" == "Not Found" ]] && curl -so /dev/null -X POST https://api.telegram.org/bot$TOKEN_TG/sendMessage -d text="Error checking torrserver $new_version" -d chat_id=$CHAT_ID_TG
+          echo "yes"
 
       - name: Set up QEMU
+        if: ${{ env.old_version != env.new_version && env.new_version != 'Not Found' }}
         uses: docker/setup-qemu-action@v1
 
       - name: Set up Docker Buildx
+        if: ${{ env.old_version != env.new_version && env.new_version != 'Not Found' }}
         uses: docker/setup-buildx-action@v1
 
       - name: Docker meta
+        if: ${{ env.old_version != env.new_version && env.new_version != 'Not Found' }}
         id: meta
         uses: docker/metadata-action@v3
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/torrserver
 
       - name: Login to DockerHub
+        if: ${{ env.old_version != env.new_version && env.new_version != 'Not Found' }}
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Login to GitHub Container Registry
+        if: ${{ env.old_version != env.new_version && env.new_version != 'Not Found' }}
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and push
+        if: ${{ env.old_version != env.new_version && env.new_version != 'Not Found' }}
         id: docker_build
         uses: docker/build-push-action@v2
         with:
           context: .
           platforms: linux/amd64,linux/386,linux/arm64,linux/arm/v7
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            solopasha/torrserver:latest
+            solopasha/torrserver:${{ env.tag }}
+            ghcr.io/solopasha/torrserver:latest
+            ghcr.io/solopasha/torrserver:${{ env.tag }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Commit files
+        if: ${{ env.old_version != env.new_version && env.new_version != 'Not Found' }}
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -am "$(date +%d.%m.%Y) Update $new_version"
+          git push
