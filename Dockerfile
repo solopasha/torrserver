@@ -12,7 +12,7 @@ ENV PATH="${TORRSERVER_DIR}:${PATH}"
 
 WORKDIR ${TORRSERVER_DIR}
 # Download TorrServer binaries
-RUN apk add --no-cache libc6-compat curl; \
+RUN apk add --no-cache libc6-compat curl libstdc++; \
     apkArch="$(apk --print-arch)"; \
     case "$apkArch" in \
     x86_64) export TORRSERVER_ARCH='linux-amd64' ;; \
