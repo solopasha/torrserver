@@ -1,36 +1,38 @@
-FROM alpine
-LABEL maintainer="solopasha"
+FROM --platform=amd64 node:16-alpine as front
+RUN apk add --no-cache git && \
+    mkdir /build && cd /build && \ 
+    git clone https://github.com/YouROK/TorrServer . && \ 
+    cd web && \
+    yarn install && yarn run build
+FROM golang:1.17-alpine as builder
+RUN apk add --no-cache git patch curl && \ 
+    git clone https://github.com/YouROK/TorrServer /opt/src
 
-# TorrServer directory
+COPY . /opt/src
+COPY --from=front /build/web/build /opt/src/web/build
+
+WORKDIR /opt/src
+
+ARG TARGETARCH
+
+ENV GOARCH=$TARGETARCH
+
+# Build torrserver
+RUN patch -Np1 -i 1.patch && \
+    apk add --no-cache g++ && \
+    go run gen_web.go && \
+    cd server && \
+    go clean -i -r -cache && \
+    go mod tidy && \
+    go build --ldflags '-linkmode external -extldflags "-static -w -s -X"' -tags=nosqlite --o "torrserver" ./cmd 
+
+FROM busybox
 ENV TORRSERVER_DIR="/torrserver"
-
-# Torrserver UI port
+ENV PATH="${TORRSERVER_DIR}:${PATH}"
 ENV TORRSERVER_PORT="8090"
 
-ENV GODEBUG=madvdontneed=1
-ENV PATH="${TORRSERVER_DIR}:${PATH}"
-
-WORKDIR ${TORRSERVER_DIR}
-# Download TorrServer binaries
-RUN apk add --no-cache libc6-compat curl libstdc++; \
-    apkArch="$(apk --print-arch)"; \
-    case "$apkArch" in \
-    x86_64) export TORRSERVER_ARCH='linux-amd64' ;; \
-    x86) export TORRSERVER_ARCH='linux-386' ;; \
-    aarch64) export TORRSERVER_ARCH='linux-arm64' ;; \
-    armv7) export TORRSERVER_ARCH='linux-arm7' ;; \
-    esac; \
-    version="$(curl -s "https://github.com/YouROK/TorrServer/releases/latest" | sed 's#.*tag/\(.*\)\".*#\1#')" && \
-    export TORRSERVER_FILE="TorrServer-${TORRSERVER_ARCH}" && \
-    export TORRSERVER_RELEASE="https://github.com/YouROK/TorrServer/releases/download/${version}/${TORRSERVER_FILE}" && \
-    curl -sLS ${TORRSERVER_RELEASE} -o TorrServer && \
-    chmod +x TorrServer
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD curl -sS 127.0.0.1:8090/echo || exit 1
-
-# Expose port
+COPY --from=builder /opt/src/server/torrserver /torrserver/torrserver
+WORKDIR /torrserver
 EXPOSE ${TORRSERVER_PORT}
 
-# Run TorrServer
-VOLUME ${TORRSERVER_DIR}/db
-ENTRYPOINT ["TorrServer", "-d", "./db", "-t", "./db"]
+CMD ["torrserver", "-d", "./db", "-t", "./db"]
