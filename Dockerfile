@@ -6,7 +6,7 @@ RUN apk add --no-cache git && \
     cd web && \
     yarn install && yarn run build
 
-FROM golang:1.18-alpine as builder
+FROM golang:1.18.2-alpine as builder
 COPY --from=front /build/. /build
 # hadolint ignore=DL3018
 RUN apk add --no-cache git
@@ -18,12 +18,12 @@ ENV GOARCH=$TARGETARCH
 RUN apk add --no-cache g++ && \
     go run gen_web.go && \
     cd server && \
-    CGO_ENABLED=1 go build --ldflags '-linkmode external -extldflags "-static -w -s -X"' -buildmode=pie -tags=nosqlite -trimpath -mod=readonly -modcacherw -o "torrserver" ./cmd
+    CGO_ENABLED=1 go build -ldflags '-w -s' -buildmode=pie -tags=nosqlite -trimpath -mod=readonly -modcacherw -o "torrserver" ./cmd
 
 FROM alpine
 LABEL maintainer="solopasha"
-COPY --from=builder /build/server/torrserver /bin/torrserver
-RUN apk add --no-cache curl
+COPY --from=builder /build/server/torrserver /usr/bin/torrserver
+RUN apk add --no-cache curl libstdc++
 ENV TORRSERVER_DIR="/torrserver"
 ENV TORRSERVER_PORT="8090"
 ENV GODEBUG=madvdontneed=1
