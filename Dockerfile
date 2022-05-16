@@ -13,7 +13,7 @@ ENV PATH="${TORRSERVER_DIR}:${PATH}"
 WORKDIR ${TORRSERVER_DIR}
 # Download TorrServer binaries
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
-RUN apk add --no-cache libc6-compat curl libstdc++; \
+RUN apk add --no-cache libc6-compat curl libstdc++ jq; \
     apkArch="$(apk --print-arch)"; \
     case "$apkArch" in \
     x86_64) export TORRSERVER_ARCH='linux-amd64' ;; \
@@ -21,7 +21,7 @@ RUN apk add --no-cache libc6-compat curl libstdc++; \
     aarch64) export TORRSERVER_ARCH='linux-arm64' ;; \
     armv7) export TORRSERVER_ARCH='linux-arm7' ;; \
     esac; \
-    version="$(curl -s "https://github.com/YouROK/TorrServer/releases/latest" | sed 's#.*tag/\(.*\)\".*#\1#')" && \
+    version="$(curl -s "https://api.github.com/repos/YouROK/TorrServer/releases/latest" | jq -r '.tag_name')" && \
     export TORRSERVER_FILE="TorrServer-${TORRSERVER_ARCH}" && \
     export TORRSERVER_RELEASE="https://github.com/YouROK/TorrServer/releases/download/${version}/${TORRSERVER_FILE}" && \
     curl -sLS "${TORRSERVER_RELEASE}" -o TorrServer && \
