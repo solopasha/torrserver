@@ -1,6 +1,6 @@
 # torrserver
 
-Version 89e292f041eb1d8553f05e2f9031ee606ce4659a
+Version b4e77bed0f075c11679989efb988d27fcf0d99fd
 
 ## Unofficial Docker Image for TorrServer
 
