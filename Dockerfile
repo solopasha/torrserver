@@ -6,7 +6,7 @@ RUN apk add --no-cache git && \
     cd web && \
     yarn install && yarn run build
 
-FROM golang:1.19-alpine as builder
+FROM golang:1.20-alpine as builder
 COPY --from=front /build/. /build
 # hadolint ignore=DL3018
 RUN apk add --no-cache git
