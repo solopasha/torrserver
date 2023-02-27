@@ -1,10 +1,13 @@
-FROM --platform=linux/amd64 node:16-alpine as front
+FROM --platform=linux/amd64 node:19-alpine as front
 WORKDIR /build
 # hadolint ignore=DL3003,DL3018
 RUN apk add --no-cache git && \
     git clone https://github.com/YouROK/TorrServer . && \
     cd web && \
-    yarn install && yarn run build
+    yarn install && \
+    sed '10 i const crypto = require("crypto");\nconst crypto_orig_createHash = crypto.createHash;\ncrypto.createHash = algorithm => crypto_orig_createHash(algorithm == "md4" ? "sha256" : algorithm);' \
+    -i node_modules/react-scripts/config/webpack.config.js && \
+    yarn run build
 
 FROM golang:1.20-alpine as builder
 COPY --from=front /build/. /build
@@ -20,8 +23,11 @@ RUN apk add --no-cache g++ && \
     cd server && \
     CGO_ENABLED=1 go build -ldflags '-w -s' -buildmode=pie -tags=nosqlite -trimpath -mod=readonly -modcacherw -o "torrserver" ./cmd
 
+FROM mwader/static-ffmpeg as ffmpeg
+
 FROM alpine
 LABEL maintainer="solopasha"
+COPY --from=ffmpeg /ffprobe /usr/bin/
 COPY --from=builder /build/server/torrserver /usr/bin/torrserver
 RUN apk add --no-cache curl libstdc++
 ENV TORRSERVER_DIR="/torrserver"
