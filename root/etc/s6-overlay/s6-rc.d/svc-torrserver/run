@@ -1,4 +1,12 @@
 #!/usr/bin/with-contenv bash
 # shellcheck shell=bash
 
-exec s6-setuidgid abc /usr/bin/torrserver -d /torrserver/db -t /torrserver/db
+launch_opts=(
+    -d /torrserver/db
+    -t /torrserver/db
+)
+if [[ -n $TS_HTTPAUTH ]]; then launch_opts+=(--httpauth); fi
+if [[ -n $TS_RDB ]]; then launch_opts+=(--rdb); fi
+if [[ -n $TS_DONTKILL ]]; then launch_opts+=(--dontkill); fi
+
+exec s6-setuidgid abc /usr/bin/torrserver "${launch_opts[@]}"
