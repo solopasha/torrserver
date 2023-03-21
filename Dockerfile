@@ -25,11 +25,11 @@ RUN apk add --no-cache g++ && \
 
 FROM mwader/static-ffmpeg as ffmpeg
 
-FROM alpine
+FROM ghcr.io/linuxserver/baseimage-alpine:3.17
 LABEL maintainer="solopasha"
 COPY --from=ffmpeg /ffprobe /usr/bin/
 COPY --from=builder /build/server/torrserver /usr/bin/torrserver
-RUN apk add --no-cache curl libstdc++
+RUN apk add --no-cache curl libstdc++ tzdata
 ENV TORRSERVER_DIR="/torrserver"
 ENV TORRSERVER_PORT="8090"
 ENV GODEBUG=madvdontneed=1
@@ -39,4 +39,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD curl 
 EXPOSE ${TORRSERVER_PORT}
 VOLUME ${TORRSERVER_DIR}/db
 
-CMD ["torrserver", "-d", "./db", "-t", "./db"]
+COPY root/ /
