@@ -3,12 +3,12 @@ services:
   torrserver:
     image: solopasha/torrserver:master
     container_name: torrservermatrix
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
     volumes:
-      - torrserver:/torrserver/db
-      - /etc/localtime:/etc/localtime:ro
+      - ./db:/torrserver/db
     ports:
       - 8090:8090
     restart: unless-stopped
-
-volumes:
-  torrserver: {}
