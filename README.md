@@ -1,6 +1,6 @@
 # torrserver
 
-Version MatriX.120
+Version MatriX.
 
 ## Unofficial Docker Image for TorrServer
 
@@ -42,6 +42,9 @@ Container image is configured using parameters passed at runtime (such as those 
 | `-e PUID=1000` | for UserID - see below for explanation |
 | `-e PGID=1000` | for GroupID - see below for explanation |
 | `-e TZ=Etc/UTC` | specify a timezone to use, see this [list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List). |
+| `-e TS_HTTPAUTH=1` | http auth on all requests, see this [Authorization](https://github.com/YouROK/TorrServer#authorization). |
+| `-e TS_RDB=1` | start in a read-only DB mode. |
+| `-e TS_DONTKILL=1` | don't kill server on signal. |
 
 ### Usage
 
