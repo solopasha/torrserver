@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+exec s6-setuidgid abc /torrserver/TorrServer -d /torrserver/db -t /torrserver/db

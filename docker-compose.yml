@@ -1,11 +1,14 @@
 version: "3.7"
 services:
   torrserver:
-    image: solopasha/torrserver
+    image: solopasha/torrserver:master
     container_name: torrservermatrix
     volumes:
-      - ./db:/torrserver/db
+      - torrserver:/torrserver/db
       - /etc/localtime:/etc/localtime:ro
     ports:
       - 8090:8090
     restart: unless-stopped
+
+volumes:
+  torrserver: {}

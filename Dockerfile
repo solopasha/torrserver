@@ -1,4 +1,4 @@
-FROM alpine
+FROM ghcr.io/linuxserver/baseimage-alpine:3.17
 LABEL maintainer="solopasha"
 
 # TorrServer directory
@@ -34,4 +34,5 @@ EXPOSE ${TORRSERVER_PORT}
 
 # Run TorrServer
 VOLUME ${TORRSERVER_DIR}/db
-ENTRYPOINT ["TorrServer", "-d", "./db", "-t", "./db"]
+
+COPY root/ /
