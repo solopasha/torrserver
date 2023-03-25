@@ -35,7 +35,7 @@ ENV TORRSERVER_PORT="8090"
 ENV GODEBUG=madvdontneed=1
 
 WORKDIR ${TORRSERVER_DIR}
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD curl -sS 127.0.0.1:8090/echo || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD curl -sS 127.0.0.1:${TORRSERVER_PORT}/echo || exit 1
 EXPOSE ${TORRSERVER_PORT}
 VOLUME ${TORRSERVER_DIR}/db
 
