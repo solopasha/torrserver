@@ -9,7 +9,7 @@ RUN apk add --no-cache git && \
     -i node_modules/react-scripts/config/webpack.config.js && \
     yarn run build
 
-FROM golang:1.20-alpine as builder
+FROM golang:1.21-alpine as builder
 COPY --from=front /build/. /build
 # hadolint ignore=DL3018
 RUN apk add --no-cache git
@@ -25,7 +25,7 @@ RUN apk add --no-cache g++ && \
 
 FROM mwader/static-ffmpeg as ffmpeg
 
-FROM ghcr.io/linuxserver/baseimage-alpine:3.17
+FROM ghcr.io/linuxserver/baseimage-alpine:3.18
 LABEL maintainer="solopasha"
 COPY --from=ffmpeg /ffprobe /usr/bin/
 COPY --from=builder /build/server/torrserver /usr/bin/torrserver

@@ -1,6 +1,7 @@
 name: Build and push torrserver docker image
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - dev
