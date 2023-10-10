@@ -33,7 +33,7 @@ jobs:
 
       - name: Set up QEMU
         if: ${{ env.old_version != env.new_version && env.new_version != 'null' }}
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         if: ${{ env.old_version != env.new_version && env.new_version != 'null' }}
