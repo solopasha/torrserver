@@ -27,7 +27,7 @@ RUN apk add --no-cache libc6-compat curl libstdc++ jq; \
     curl -sLS "${TORRSERVER_RELEASE}" -o TorrServer && \
     chmod +x TorrServer
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD curl -sS 127.0.0.1:8090/echo || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD curl -sS 127.0.0.1:${TORRSERVER_PORT}/echo || exit 1
 
 # Expose port
 EXPOSE ${TORRSERVER_PORT}
