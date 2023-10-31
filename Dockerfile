@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:19-alpine as front
+FROM --platform=linux/amd64 node:20-alpine as front
 WORKDIR /build
 # hadolint ignore=DL3003,DL3018
 RUN apk add --no-cache git && \
