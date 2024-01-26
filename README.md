@@ -1,6 +1,6 @@
 # torrserver
 
-Version MatriX.128
+Version MatriX.129
 
 ## Unofficial Docker Image for TorrServer
 
