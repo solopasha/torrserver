@@ -2,6 +2,7 @@ name: Build and push torrserver docker image
 
 on:
   push:
+  workflow_dispatch:
 
   schedule:
     - cron: "0 0 * * *"
