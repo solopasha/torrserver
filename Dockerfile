@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:20-alpine as front
+FROM --platform=linux/amd64 node:22-alpine as front
 WORKDIR /build
 # hadolint ignore=DL3003,DL3018
 RUN apk add --no-cache git && \
@@ -9,7 +9,7 @@ RUN apk add --no-cache git && \
     -i node_modules/react-scripts/config/webpack.config.js && \
     yarn run build
 
-FROM golang:1.21-alpine as builder
+FROM golang:1.23-alpine as builder
 COPY --from=front /build/. /build
 # hadolint ignore=DL3018
 RUN apk add --no-cache git
@@ -21,11 +21,13 @@ ENV GOARCH=$TARGETARCH
 RUN apk add --no-cache g++ && \
     go run gen_web.go && \
     cd server && \
+    go mod tidy && \
+    go clean -i -r -cache && \
     CGO_ENABLED=1 go build -ldflags '-w -s' -buildmode=pie -tags=nosqlite -trimpath -mod=readonly -modcacherw -o "torrserver" ./cmd
 
 FROM mwader/static-ffmpeg as ffmpeg
 
-FROM ghcr.io/linuxserver/baseimage-alpine:3.18
+FROM ghcr.io/linuxserver/baseimage-alpine:3.20
 LABEL maintainer="solopasha"
 COPY --from=ffmpeg /ffprobe /usr/bin/
 COPY --from=builder /build/server/torrserver /usr/bin/torrserver
